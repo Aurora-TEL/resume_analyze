@@ -3,58 +3,63 @@
     <section class="auth-panel">
       <div class="section-head">
         <div>
-          <h2 class="section-title">创建账号</h2>
-          <p class="section-copy">注册后就能上传简历、解析岗位并生成分析报告。</p>
+          <h2 class="section-title">{{ t.auth.register.panelTitle }}</h2>
+          <p class="section-copy">{{ t.auth.register.panelCopy }}</p>
         </div>
       </div>
 
       <el-form ref="formRef" :model="form" :rules="rules" label-position="top" @submit.prevent="handleRegister">
-        <el-form-item label="昵称" prop="nickname">
-          <el-input v-model="form.nickname" placeholder="怎么称呼你" />
+        <el-form-item :label="t.auth.register.nickname" prop="nickname">
+          <el-input v-model="form.nickname" :placeholder="t.auth.register.nicknamePlaceholder" />
         </el-form-item>
-        <el-form-item label="邮箱" prop="email">
+        <el-form-item :label="t.auth.register.email" prop="email">
           <el-input v-model="form.email" placeholder="you@example.com" />
         </el-form-item>
-        <el-form-item label="密码" prop="password">
-          <el-input v-model="form.password" show-password placeholder="至少 8 位密码" />
+        <el-form-item :label="t.auth.register.password" prop="password">
+          <el-input v-model="form.password" show-password :placeholder="t.auth.register.passwordPlaceholder" />
         </el-form-item>
-        <el-form-item label="确认密码" prop="confirmPassword">
-          <el-input v-model="form.confirmPassword" show-password placeholder="再次输入密码" />
+        <el-form-item :label="t.auth.register.confirmPassword" prop="confirmPassword">
+          <el-input
+            v-model="form.confirmPassword"
+            show-password
+            :placeholder="t.auth.register.confirmPasswordPlaceholder"
+          />
         </el-form-item>
         <el-button type="primary" :loading="submitting" class="submit-button" @click="handleRegister">
-          注册并进入工作台
+          {{ t.auth.register.submit }}
         </el-button>
       </el-form>
 
       <p class="auth-footer">
-        已经有账号？
-        <RouterLink to="/login">去登录</RouterLink>
+        {{ t.auth.register.hasAccount }}
+        <RouterLink to="/login">{{ t.auth.register.toLogin }}</RouterLink>
       </p>
     </section>
 
     <section class="auth-hero">
       <p class="hero-kicker">One Flow</p>
-      <h1>从注册开始，把简历优化流程装进同一个工作台。</h1>
-      <p>
-        你不需要再在文档、模型和表格之间来回切。这里会把简历、JD、分析结果和修改建议串成一条路径。
-      </p>
+      <h1>{{ t.auth.register.heroTitle }}</h1>
+      <p>{{ t.auth.register.heroCopy }}</p>
     </section>
   </div>
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from "vue";
+import { computed, reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import { ElMessage, type FormInstance, type FormRules } from "element-plus";
 
 import { register } from "@/api/auth";
 import { useAuthStore } from "@/stores/auth";
 import { useUserStore } from "@/stores/user";
+import { useUserMessages } from "@/utils/userI18n";
 
 const router = useRouter();
 const authStore = useAuthStore();
 const userStore = useUserStore();
+const messages = useUserMessages();
 
+const t = computed(() => messages.value);
 const formRef = ref<FormInstance>();
 const submitting = ref(false);
 const form = reactive({
@@ -64,22 +69,22 @@ const form = reactive({
   confirmPassword: "",
 });
 
-const rules: FormRules = {
-  nickname: [{ required: true, message: "请输入昵称", trigger: "blur" }],
+const rules = computed<FormRules>(() => ({
+  nickname: [{ required: true, message: t.value.auth.register.validationNicknameRequired, trigger: "blur" }],
   email: [
-    { required: true, message: "请输入邮箱", trigger: "blur" },
-    { type: "email", message: "邮箱格式不正确", trigger: "blur" },
+    { required: true, message: t.value.auth.register.validationEmailRequired, trigger: "blur" },
+    { type: "email", message: t.value.auth.register.validationEmailInvalid, trigger: "blur" },
   ],
   password: [
-    { required: true, message: "请输入密码", trigger: "blur" },
-    { min: 8, message: "密码至少 8 位", trigger: "blur" },
+    { required: true, message: t.value.auth.register.validationPasswordRequired, trigger: "blur" },
+    { min: 8, message: t.value.auth.register.validationPasswordMin, trigger: "blur" },
   ],
   confirmPassword: [
-    { required: true, message: "请再次输入密码", trigger: "blur" },
+    { required: true, message: t.value.auth.register.validationConfirmRequired, trigger: "blur" },
     {
       validator: (_rule, value, callback) => {
         if (value !== form.password) {
-          callback(new Error("两次输入的密码不一致"));
+          callback(new Error(t.value.auth.register.validationConfirmMismatch));
           return;
         }
         callback();
@@ -87,7 +92,7 @@ const rules: FormRules = {
       trigger: "blur",
     },
   ],
-};
+}));
 
 async function handleRegister() {
   const valid = await formRef.value?.validate().catch(() => false);
@@ -104,7 +109,7 @@ async function handleRegister() {
     });
     authStore.setToken(result.access_token);
     await userStore.fetchCurrentUser(true);
-    ElMessage.success("注册成功");
+    ElMessage.success(t.value.auth.register.success);
     router.push("/dashboard");
   } finally {
     submitting.value = false;

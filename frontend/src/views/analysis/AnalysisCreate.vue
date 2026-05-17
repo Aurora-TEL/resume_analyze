@@ -2,29 +2,27 @@
   <div class="app-page">
     <section class="hero-card">
       <p class="hero-kicker">Full Analysis</p>
-      <h1 class="hero-title">把简历和岗位放在一起，直接生成完整分析报告。</h1>
-      <p class="hero-copy">
-        当前 MVP 默认执行 <code>full_analysis</code>。接口会同步返回结果，所以成功后会直接跳到报告页。
-      </p>
+      <h1 class="hero-title">{{ t.analysis.create.heroTitle }}</h1>
+      <p class="hero-copy">{{ t.analysis.create.heroCopy }}</p>
     </section>
 
     <section class="section-card">
       <div class="section-head">
         <div>
-          <h2 class="section-title">分析配置</h2>
-          <p class="section-copy">先选择一份简历，再选择一个岗位。</p>
+          <h2 class="section-title">{{ t.analysis.create.sectionTitle }}</h2>
+          <p class="section-copy">{{ t.analysis.create.sectionCopy }}</p>
         </div>
       </div>
 
       <el-form ref="formRef" :model="form" :rules="rules" label-position="top">
-        <el-form-item label="选择简历" prop="resume_id">
-          <el-select v-model="form.resume_id" placeholder="请选择简历" filterable style="width: 100%">
+        <el-form-item :label="t.analysis.create.labelResume" prop="resume_id">
+          <el-select v-model="form.resume_id" :placeholder="t.analysis.create.placeholderResume" filterable style="width: 100%">
             <el-option v-for="item in resumes" :key="item.id" :label="item.title" :value="item.id" />
           </el-select>
         </el-form-item>
 
-        <el-form-item label="选择岗位" prop="job_description_id">
-          <el-select v-model="form.job_description_id" placeholder="请选择岗位" filterable style="width: 100%">
+        <el-form-item :label="t.analysis.create.labelJob" prop="job_description_id">
+          <el-select v-model="form.job_description_id" :placeholder="t.analysis.create.placeholderJob" filterable style="width: 100%">
             <el-option
               v-for="item in jobs"
               :key="item.id"
@@ -34,13 +32,13 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item label="分析类型">
-          <el-input model-value="full_analysis" disabled />
+        <el-form-item :label="t.analysis.create.labelTaskType">
+          <el-input :model-value="t.analysis.create.taskTypeValue" disabled />
         </el-form-item>
 
         <div class="action-row">
-          <el-button type="primary" :loading="submitting" @click="handleSubmit">开始分析</el-button>
-          <el-button @click="router.push('/reports')">查看已有报告</el-button>
+          <el-button type="primary" :loading="submitting" @click="handleSubmit">{{ t.analysis.create.actionSubmit }}</el-button>
+          <el-button @click="router.push('/reports')">{{ t.analysis.create.actionViewReports }}</el-button>
         </div>
       </el-form>
     </section>
@@ -49,11 +47,11 @@
       <article class="section-card">
         <div class="section-head">
           <div>
-            <h2 class="section-title">可用简历</h2>
-            <p class="section-copy">建议优先选择已完成 AI 解析的简历。</p>
+            <h2 class="section-title">{{ t.analysis.create.resumeSectionTitle }}</h2>
+            <p class="section-copy">{{ t.analysis.create.resumeSectionCopy }}</p>
           </div>
         </div>
-        <el-empty v-if="!resumes.length && !loading" description="还没有简历，先上传一份吧。" />
+        <el-empty v-if="!resumes.length && !loading" :description="t.analysis.create.resumeEmpty" />
         <div v-else class="selection-list">
           <button
             v-for="item in resumes"
@@ -71,11 +69,11 @@
       <article class="section-card">
         <div class="section-head">
           <div>
-            <h2 class="section-title">可用岗位</h2>
-            <p class="section-copy">建议选择已经检查过 JD 内容的岗位。</p>
+            <h2 class="section-title">{{ t.analysis.create.jobSectionTitle }}</h2>
+            <p class="section-copy">{{ t.analysis.create.jobSectionCopy }}</p>
           </div>
         </div>
-        <el-empty v-if="!jobs.length && !loading" description="还没有岗位，先创建一个吧。" />
+        <el-empty v-if="!jobs.length && !loading" :description="t.analysis.create.jobEmpty" />
         <div v-else class="selection-list">
           <button
             v-for="item in jobs"
@@ -85,7 +83,7 @@
             @click="form.job_description_id = item.id"
           >
             <strong>{{ item.title }}</strong>
-            <span>{{ item.company_name || "未填写公司" }}</span>
+            <span>{{ item.company_name || t.analysis.create.companyFallback }}</span>
           </button>
         </div>
       </article>
@@ -94,7 +92,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, ref } from "vue";
+import { computed, onMounted, reactive, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { ElMessage, type FormInstance, type FormRules } from "element-plus";
 
@@ -102,9 +100,12 @@ import { createAnalysisTask } from "@/api/analysis";
 import { listJobs, type JobListItem } from "@/api/jobs";
 import { listResumes, type ResumeListItem } from "@/api/resumes";
 import { statusLabel } from "@/utils/format";
+import { useUserMessages } from "@/utils/userI18n";
 
 const route = useRoute();
 const router = useRouter();
+const messages = useUserMessages();
+const t = computed(() => messages.value);
 const formRef = ref<FormInstance>();
 const loading = ref(false);
 const submitting = ref(false);
@@ -117,10 +118,10 @@ const form = reactive({
   task_type: "full_analysis" as const,
 });
 
-const rules: FormRules = {
-  resume_id: [{ required: true, message: "请选择简历", trigger: "change" }],
-  job_description_id: [{ required: true, message: "请选择岗位", trigger: "change" }],
-};
+const rules = computed<FormRules>(() => ({
+  resume_id: [{ required: true, message: t.value.analysis.create.validationResumeRequired, trigger: "change" }],
+  job_description_id: [{ required: true, message: t.value.analysis.create.validationJobRequired, trigger: "change" }],
+}));
 
 async function loadOptions() {
   loading.value = true;
@@ -148,7 +149,7 @@ async function handleSubmit() {
   submitting.value = true;
   try {
     const result = await createAnalysisTask(form);
-    ElMessage.success("分析完成");
+    ElMessage.success(t.value.analysis.create.success);
     if (result.report_id) {
       router.push(`/reports/${result.report_id}`);
       return;

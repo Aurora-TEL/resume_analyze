@@ -2,58 +2,62 @@
   <div class="app-page">
     <section class="hero-card">
       <p class="hero-kicker">Resume Center</p>
-      <h1 class="hero-title">把可分析的简历整理成一个稳定入口。</h1>
-      <p class="hero-copy">
-        上传之后你可以重新解析、设为默认简历，或者直接带着它发起岗位匹配分析。
-      </p>
+      <h1 class="hero-title">{{ t.resumes.list.heroTitle }}</h1>
+      <p class="hero-copy">{{ t.resumes.list.heroCopy }}</p>
       <div class="action-row">
-        <el-button type="primary" @click="router.push('/resumes/upload')">上传简历</el-button>
-        <el-button @click="loadResumes">刷新列表</el-button>
+        <el-button type="primary" @click="router.push('/resumes/upload')">{{ t.resumes.list.actionUpload }}</el-button>
+        <el-button @click="loadResumes">{{ t.resumes.list.actionRefresh }}</el-button>
       </div>
     </section>
 
     <section class="section-card">
       <div class="section-head">
         <div>
-          <h2 class="section-title">简历列表</h2>
-          <p class="section-copy">当前共 {{ pagination.total }} 份简历。</p>
+          <h2 class="section-title">{{ t.resumes.list.sectionTitle }}</h2>
+          <p class="section-copy">{{ sectionCopy }}</p>
         </div>
-        <el-input v-model="keyword" placeholder="按标题搜索" clearable style="max-width: 240px" @change="handleSearch" />
+        <el-input
+          v-model="keyword"
+          :placeholder="t.resumes.list.searchPlaceholder"
+          clearable
+          style="max-width: 240px"
+          @change="handleSearch"
+        />
       </div>
 
-      <el-empty v-if="!rows.length && !loading" description="还没有简历，先上传第一份吧。" />
+      <el-empty v-if="!rows.length && !loading" :description="t.resumes.list.empty" />
 
       <el-table v-else v-loading="loading" :data="rows" stripe>
-        <el-table-column prop="title" label="标题" min-width="180" />
-        <el-table-column prop="file_name" label="文件名" min-width="180" />
-        <el-table-column label="类型" width="90">
+        <el-table-column prop="title" :label="t.resumes.list.tableTitle" min-width="180" />
+        <el-table-column prop="file_name" :label="t.resumes.list.tableFileName" min-width="180" />
+        <el-table-column :label="t.resumes.list.tableType" width="90">
           <template #default="{ row }">{{ row.file_type.toUpperCase() }}</template>
         </el-table-column>
-        <el-table-column label="大小" width="100">
+        <el-table-column :label="t.resumes.list.tableSize" width="100">
           <template #default="{ row }">{{ formatFileSize(row.file_size) }}</template>
         </el-table-column>
-        <el-table-column label="状态" width="100">
+        <el-table-column :label="t.resumes.list.tableStatus" width="100">
           <template #default="{ row }">
             <el-tag :type="statusTagType(row.parse_status)">{{ statusLabel(row.parse_status) }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="默认" width="90">
+        <el-table-column :label="t.resumes.list.tableDefault" width="90">
           <template #default="{ row }">
-            <el-tag v-if="row.is_default" type="success">默认</el-tag>
+            <el-tag v-if="row.is_default" type="success">{{ t.resumes.list.defaultYes }}</el-tag>
             <span v-else>-</span>
           </template>
         </el-table-column>
-        <el-table-column label="创建时间" min-width="160">
+        <el-table-column :label="t.resumes.list.tableCreatedAt" min-width="160">
           <template #default="{ row }">{{ formatDate(row.created_at) }}</template>
         </el-table-column>
-        <el-table-column label="操作" min-width="260" fixed="right">
+        <el-table-column :label="t.resumes.list.tableAction" min-width="260" fixed="right">
           <template #default="{ row }">
             <div class="row-actions">
-              <el-button text type="primary" @click="router.push(`/resumes/${row.id}`)">详情</el-button>
-              <el-button text @click="handleParse(row.id)">AI解析</el-button>
-              <el-button text @click="handleSetDefault(row.id)">设默认</el-button>
-              <el-button text @click="router.push(`/analysis/create?resumeId=${row.id}`)">去分析</el-button>
-              <el-button text type="danger" @click="handleDelete(row.id)">删除</el-button>
+              <el-button text type="primary" @click="router.push(`/resumes/${row.id}`)">{{ t.resumes.list.actionDetail }}</el-button>
+              <el-button text @click="handleParse(row.id)">{{ t.resumes.list.actionParse }}</el-button>
+              <el-button text @click="handleSetDefault(row.id)">{{ t.resumes.list.actionSetDefault }}</el-button>
+              <el-button text @click="router.push(`/analysis/create?resumeId=${row.id}`)">{{ t.resumes.list.actionAnalyze }}</el-button>
+              <el-button text type="danger" @click="handleDelete(row.id)">{{ t.resumes.list.actionDelete }}</el-button>
             </div>
           </template>
         </el-table-column>
@@ -73,14 +77,17 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, ref } from "vue";
+import { computed, onMounted, reactive, ref } from "vue";
 import { useRouter } from "vue-router";
-import { ElMessageBox, ElMessage } from "element-plus";
+import { ElMessage, ElMessageBox } from "element-plus";
 
 import { deleteResume, listResumes, parseResume, updateResume, type ResumeListItem } from "@/api/resumes";
 import { formatDate, formatFileSize, statusLabel, statusTagType } from "@/utils/format";
+import { useUserMessages } from "@/utils/userI18n";
 
 const router = useRouter();
+const messages = useUserMessages();
+const t = computed(() => messages.value);
 const loading = ref(false);
 const keyword = ref("");
 const rows = ref<ResumeListItem[]>([]);
@@ -89,6 +96,8 @@ const pagination = reactive({
   pageSize: 10,
   total: 0,
 });
+
+const sectionCopy = computed(() => t.value.resumes.list.sectionCopy.replace("{total}", String(pagination.total)));
 
 async function loadResumes() {
   loading.value = true;
@@ -107,22 +116,22 @@ async function loadResumes() {
 
 async function handleParse(resumeId: string) {
   await parseResume(resumeId);
-  ElMessage.success("简历解析完成");
+  ElMessage.success(t.value.resumes.list.parseSuccess);
   await loadResumes();
 }
 
 async function handleSetDefault(resumeId: string) {
   await updateResume(resumeId, { is_default: true });
-  ElMessage.success("默认简历已更新");
+  ElMessage.success(t.value.resumes.list.defaultUpdated);
   await loadResumes();
 }
 
 async function handleDelete(resumeId: string) {
-  await ElMessageBox.confirm("删除后将不再出现在当前列表中，确认继续吗？", "删除简历", {
+  await ElMessageBox.confirm(t.value.resumes.list.deleteConfirmMessage, t.value.resumes.list.deleteConfirmTitle, {
     type: "warning",
   });
   await deleteResume(resumeId);
-  ElMessage.success("简历已删除");
+  ElMessage.success(t.value.resumes.list.deleteSuccess);
   if (rows.value.length === 1 && pagination.page > 1) {
     pagination.page -= 1;
   }

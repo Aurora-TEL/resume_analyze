@@ -2,42 +2,40 @@
   <div class="app-page">
     <section class="hero-card">
       <p class="hero-kicker">Report Archive</p>
-      <h1 class="hero-title">把每一次分析结果沉淀成可复看的报告。</h1>
-      <p class="hero-copy">
-        这里适合回看不同岗位下的匹配差异，观察关键词覆盖和建议项的变化趋势。
-      </p>
+      <h1 class="hero-title">{{ t.reports.list.heroTitle }}</h1>
+      <p class="hero-copy">{{ t.reports.list.heroCopy }}</p>
       <div class="action-row">
-        <el-button type="primary" @click="router.push('/analysis/create')">新建分析</el-button>
-        <el-button @click="loadReports">刷新列表</el-button>
+        <el-button type="primary" @click="router.push('/analysis/create')">{{ t.reports.list.actionCreate }}</el-button>
+        <el-button @click="loadReports">{{ t.reports.list.actionRefresh }}</el-button>
       </div>
     </section>
 
     <section class="section-card">
       <div class="section-head">
         <div>
-          <h2 class="section-title">报告列表</h2>
-          <p class="section-copy">当前共 {{ pagination.total }} 份报告。</p>
+          <h2 class="section-title">{{ t.reports.list.sectionTitle }}</h2>
+          <p class="section-copy">{{ sectionCopy }}</p>
         </div>
       </div>
 
-      <el-empty v-if="!rows.length && !loading" description="还没有报告，先跑一条分析链路吧。" />
+      <el-empty v-if="!rows.length && !loading" :description="t.reports.list.empty" />
 
       <el-table v-else v-loading="loading" :data="rows" stripe>
-        <el-table-column prop="resume_title" label="简历" min-width="180" />
-        <el-table-column prop="job_title" label="岗位" min-width="180" />
-        <el-table-column label="总分" width="90">
+        <el-table-column prop="resume_title" :label="t.reports.list.tableResume" min-width="180" />
+        <el-table-column prop="job_title" :label="t.reports.list.tableJob" min-width="180" />
+        <el-table-column :label="t.reports.list.tableTotalScore" width="90">
           <template #default="{ row }">{{ formatScore(row.total_score) }}</template>
         </el-table-column>
-        <el-table-column label="匹配度" width="90">
+        <el-table-column :label="t.reports.list.tableMatchScore" width="90">
           <template #default="{ row }">{{ formatScore(row.match_score) }}</template>
         </el-table-column>
-        <el-table-column prop="summary" label="摘要" min-width="280" show-overflow-tooltip />
-        <el-table-column label="生成时间" min-width="160">
+        <el-table-column prop="summary" :label="t.reports.list.tableSummary" min-width="280" show-overflow-tooltip />
+        <el-table-column :label="t.reports.list.tableCreatedAt" min-width="160">
           <template #default="{ row }">{{ formatDate(row.created_at) }}</template>
         </el-table-column>
-        <el-table-column label="操作" width="100" fixed="right">
+        <el-table-column :label="t.reports.list.tableAction" width="100" fixed="right">
           <template #default="{ row }">
-            <el-button text type="primary" @click="router.push(`/reports/${row.id}`)">详情</el-button>
+            <el-button text type="primary" @click="router.push(`/reports/${row.id}`)">{{ t.reports.list.actionDetail }}</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -56,13 +54,16 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, ref } from "vue";
+import { computed, onMounted, reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 
 import { listReports, type ReportListItem } from "@/api/reports";
 import { formatDate, formatScore } from "@/utils/format";
+import { useUserMessages } from "@/utils/userI18n";
 
 const router = useRouter();
+const messages = useUserMessages();
+const t = computed(() => messages.value);
 const loading = ref(false);
 const rows = ref<ReportListItem[]>([]);
 const pagination = reactive({
@@ -70,6 +71,8 @@ const pagination = reactive({
   pageSize: 10,
   total: 0,
 });
+
+const sectionCopy = computed(() => t.value.reports.list.sectionCopy.replace("{total}", String(pagination.total)));
 
 async function loadReports() {
   loading.value = true;

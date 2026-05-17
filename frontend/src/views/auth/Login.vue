@@ -2,58 +2,59 @@
   <div class="auth-shell glass-card">
     <section class="auth-hero">
       <p class="hero-kicker">DeepSeek Connected</p>
-      <h1>登录后，直接开始跑真实分析。</h1>
-      <p>
-        现在前后端和 AI 链路都已经打通，你可以从上传简历开始，一路走到岗位匹配和报告查看。
-      </p>
+      <h1>{{ t.auth.login.heroTitle }}</h1>
+      <p>{{ t.auth.login.heroCopy }}</p>
       <ul class="hero-points">
-        <li>上传 PDF / DOCX / TXT 简历</li>
-        <li>用 DeepSeek 解析岗位与简历结构</li>
-        <li>生成可追踪的分析报告</li>
+        <li>{{ t.auth.login.pointResume }}</li>
+        <li>{{ t.auth.login.pointStructure }}</li>
+        <li>{{ t.auth.login.pointReport }}</li>
       </ul>
     </section>
 
     <section class="auth-panel">
       <div class="section-head">
         <div>
-          <h2 class="section-title">欢迎回来</h2>
-          <p class="section-copy">输入账号信息，继续你的简历优化流程。</p>
+          <h2 class="section-title">{{ t.auth.login.panelTitle }}</h2>
+          <p class="section-copy">{{ t.auth.login.panelCopy }}</p>
         </div>
       </div>
 
       <el-form ref="formRef" :model="form" :rules="rules" label-position="top" @submit.prevent="handleLogin">
-        <el-form-item label="邮箱" prop="email">
+        <el-form-item :label="t.auth.login.email" prop="email">
           <el-input v-model="form.email" placeholder="you@example.com" />
         </el-form-item>
-        <el-form-item label="密码" prop="password">
-          <el-input v-model="form.password" show-password placeholder="至少 8 位密码" />
+        <el-form-item :label="t.auth.login.password" prop="password">
+          <el-input v-model="form.password" show-password :placeholder="t.auth.login.passwordPlaceholder" />
         </el-form-item>
         <el-button type="primary" :loading="submitting" class="submit-button" @click="handleLogin">
-          登录
+          {{ t.auth.login.submit }}
         </el-button>
       </el-form>
 
       <p class="auth-footer">
-        还没有账号？
-        <RouterLink to="/register">立即注册</RouterLink>
+        {{ t.auth.login.noAccount }}
+        <RouterLink to="/register">{{ t.auth.login.registerNow }}</RouterLink>
       </p>
     </section>
   </div>
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from "vue";
+import { computed, reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import { ElMessage, type FormInstance, type FormRules } from "element-plus";
 
 import { login } from "@/api/auth";
 import { useAuthStore } from "@/stores/auth";
 import { useUserStore } from "@/stores/user";
+import { useUserMessages } from "@/utils/userI18n";
 
 const router = useRouter();
 const authStore = useAuthStore();
 const userStore = useUserStore();
+const messages = useUserMessages();
 
+const t = computed(() => messages.value);
 const formRef = ref<FormInstance>();
 const submitting = ref(false);
 const form = reactive({
@@ -61,13 +62,13 @@ const form = reactive({
   password: "",
 });
 
-const rules: FormRules = {
+const rules = computed<FormRules>(() => ({
   email: [
-    { required: true, message: "请输入邮箱", trigger: "blur" },
-    { type: "email", message: "邮箱格式不正确", trigger: "blur" },
+    { required: true, message: t.value.auth.login.validationEmailRequired, trigger: "blur" },
+    { type: "email", message: t.value.auth.login.validationEmailInvalid, trigger: "blur" },
   ],
-  password: [{ required: true, message: "请输入密码", trigger: "blur" }],
-};
+  password: [{ required: true, message: t.value.auth.login.validationPasswordRequired, trigger: "blur" }],
+}));
 
 async function handleLogin() {
   const valid = await formRef.value?.validate().catch(() => false);
@@ -92,7 +93,7 @@ async function handleLogin() {
       status: result.user.status,
     });
     await userStore.fetchCurrentUser(true);
-    ElMessage.success("登录成功");
+    ElMessage.success(t.value.auth.login.success);
     router.push(result.user.role === "admin" ? "/admin" : "/dashboard");
   } finally {
     submitting.value = false;

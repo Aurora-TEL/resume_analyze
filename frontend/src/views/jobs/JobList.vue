@@ -2,47 +2,51 @@
   <div class="app-page">
     <section class="hero-card">
       <p class="hero-kicker">Job Center</p>
-      <h1 class="hero-title">把目标岗位整理成可匹配的结构化输入。</h1>
-      <p class="hero-copy">
-        岗位越清晰，后面的关键词覆盖、经验差距和建议项就越稳定。
-      </p>
+      <h1 class="hero-title">{{ t.jobs.list.heroTitle }}</h1>
+      <p class="hero-copy">{{ t.jobs.list.heroCopy }}</p>
       <div class="action-row">
-        <el-button type="primary" @click="router.push('/jobs/create')">创建岗位</el-button>
-        <el-button @click="loadJobs">刷新列表</el-button>
+        <el-button type="primary" @click="router.push('/jobs/create')">{{ t.jobs.list.actionCreate }}</el-button>
+        <el-button @click="loadJobs">{{ t.jobs.list.actionRefresh }}</el-button>
       </div>
     </section>
 
     <section class="section-card">
       <div class="section-head">
         <div>
-          <h2 class="section-title">岗位列表</h2>
-          <p class="section-copy">当前共 {{ pagination.total }} 个岗位。</p>
+          <h2 class="section-title">{{ t.jobs.list.sectionTitle }}</h2>
+          <p class="section-copy">{{ sectionCopy }}</p>
         </div>
-        <el-input v-model="keyword" placeholder="按岗位或公司搜索" clearable style="max-width: 260px" @change="handleSearch" />
+        <el-input
+          v-model="keyword"
+          :placeholder="t.jobs.list.searchPlaceholder"
+          clearable
+          style="max-width: 260px"
+          @change="handleSearch"
+        />
       </div>
 
-      <el-empty v-if="!rows.length && !loading" description="还没有岗位描述，先创建一个吧。" />
+      <el-empty v-if="!rows.length && !loading" :description="t.jobs.list.empty" />
 
       <el-table v-else v-loading="loading" :data="rows" stripe>
-        <el-table-column prop="title" label="岗位名称" min-width="180" />
-        <el-table-column prop="company_name" label="公司" min-width="160" />
-        <el-table-column prop="industry" label="行业" min-width="120" />
-        <el-table-column prop="location" label="地点" min-width="110" />
-        <el-table-column label="状态" width="100">
+        <el-table-column prop="title" :label="t.jobs.list.tableTitle" min-width="180" />
+        <el-table-column prop="company_name" :label="t.jobs.list.tableCompany" min-width="160" />
+        <el-table-column prop="industry" :label="t.jobs.list.tableIndustry" min-width="120" />
+        <el-table-column prop="location" :label="t.jobs.list.tableLocation" min-width="110" />
+        <el-table-column :label="t.jobs.list.tableStatus" width="100">
           <template #default="{ row }">
             <el-tag :type="statusTagType(row.parse_status)">{{ statusLabel(row.parse_status) }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="创建时间" min-width="160">
+        <el-table-column :label="t.jobs.list.tableCreatedAt" min-width="160">
           <template #default="{ row }">{{ formatDate(row.created_at) }}</template>
         </el-table-column>
-        <el-table-column label="操作" min-width="240" fixed="right">
+        <el-table-column :label="t.jobs.list.tableAction" min-width="240" fixed="right">
           <template #default="{ row }">
             <div class="row-actions">
-              <el-button text type="primary" @click="router.push(`/jobs/${row.id}`)">详情</el-button>
-              <el-button text @click="handleParse(row.id)">重新解析</el-button>
-              <el-button text @click="router.push(`/analysis/create?jobId=${row.id}`)">去分析</el-button>
-              <el-button text type="danger" @click="handleDelete(row.id)">删除</el-button>
+              <el-button text type="primary" @click="router.push(`/jobs/${row.id}`)">{{ t.jobs.list.actionDetail }}</el-button>
+              <el-button text @click="handleParse(row.id)">{{ t.jobs.list.actionParse }}</el-button>
+              <el-button text @click="router.push(`/analysis/create?jobId=${row.id}`)">{{ t.jobs.list.actionAnalyze }}</el-button>
+              <el-button text type="danger" @click="handleDelete(row.id)">{{ t.jobs.list.actionDelete }}</el-button>
             </div>
           </template>
         </el-table-column>
@@ -62,14 +66,17 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, ref } from "vue";
+import { computed, onMounted, reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import { ElMessage, ElMessageBox } from "element-plus";
 
 import { deleteJob, listJobs, parseJob, type JobListItem } from "@/api/jobs";
 import { formatDate, statusLabel, statusTagType } from "@/utils/format";
+import { useUserMessages } from "@/utils/userI18n";
 
 const router = useRouter();
+const messages = useUserMessages();
+const t = computed(() => messages.value);
 const loading = ref(false);
 const keyword = ref("");
 const rows = ref<JobListItem[]>([]);
@@ -78,6 +85,8 @@ const pagination = reactive({
   pageSize: 10,
   total: 0,
 });
+
+const sectionCopy = computed(() => t.value.jobs.list.sectionCopy.replace("{total}", String(pagination.total)));
 
 async function loadJobs() {
   loading.value = true;
@@ -96,16 +105,16 @@ async function loadJobs() {
 
 async function handleParse(jobId: string) {
   await parseJob(jobId);
-  ElMessage.success("岗位解析完成");
+  ElMessage.success(t.value.jobs.list.parseSuccess);
   await loadJobs();
 }
 
 async function handleDelete(jobId: string) {
-  await ElMessageBox.confirm("删除后将不再出现在当前列表中，确认继续吗？", "删除岗位", {
+  await ElMessageBox.confirm(t.value.jobs.list.deleteConfirmMessage, t.value.jobs.list.deleteConfirmTitle, {
     type: "warning",
   });
   await deleteJob(jobId);
-  ElMessage.success("岗位已删除");
+  ElMessage.success(t.value.jobs.list.deleteSuccess);
   if (rows.value.length === 1 && pagination.page > 1) {
     pagination.page -= 1;
   }

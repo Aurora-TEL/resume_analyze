@@ -118,6 +118,109 @@ type UserMessages = {
     stepReportTitle: string;
     stepReportDesc: string;
   };
+  resumes: {
+    list: {
+      heroTitle: string;
+      heroCopy: string;
+      actionUpload: string;
+      actionRefresh: string;
+      sectionTitle: string;
+      sectionCopy: string;
+      searchPlaceholder: string;
+      empty: string;
+      tableTitle: string;
+      tableFileName: string;
+      tableType: string;
+      tableSize: string;
+      tableStatus: string;
+      tableDefault: string;
+      tableCreatedAt: string;
+      tableAction: string;
+      defaultYes: string;
+      actionDetail: string;
+      actionParse: string;
+      actionSetDefault: string;
+      actionAnalyze: string;
+      actionDelete: string;
+      parseSuccess: string;
+      defaultUpdated: string;
+      deleteConfirmTitle: string;
+      deleteConfirmMessage: string;
+      deleteSuccess: string;
+    };
+  };
+  jobs: {
+    list: {
+      heroTitle: string;
+      heroCopy: string;
+      actionCreate: string;
+      actionRefresh: string;
+      sectionTitle: string;
+      sectionCopy: string;
+      searchPlaceholder: string;
+      empty: string;
+      tableTitle: string;
+      tableCompany: string;
+      tableIndustry: string;
+      tableLocation: string;
+      tableStatus: string;
+      tableCreatedAt: string;
+      tableAction: string;
+      actionDetail: string;
+      actionParse: string;
+      actionAnalyze: string;
+      actionDelete: string;
+      parseSuccess: string;
+      deleteConfirmTitle: string;
+      deleteConfirmMessage: string;
+      deleteSuccess: string;
+    };
+  };
+  analysis: {
+    create: {
+      heroTitle: string;
+      heroCopy: string;
+      sectionTitle: string;
+      sectionCopy: string;
+      labelResume: string;
+      labelJob: string;
+      labelTaskType: string;
+      placeholderResume: string;
+      placeholderJob: string;
+      taskTypeValue: string;
+      actionSubmit: string;
+      actionViewReports: string;
+      resumeSectionTitle: string;
+      resumeSectionCopy: string;
+      resumeEmpty: string;
+      jobSectionTitle: string;
+      jobSectionCopy: string;
+      jobEmpty: string;
+      companyFallback: string;
+      validationResumeRequired: string;
+      validationJobRequired: string;
+      success: string;
+    };
+  };
+  reports: {
+    list: {
+      heroTitle: string;
+      heroCopy: string;
+      actionCreate: string;
+      actionRefresh: string;
+      sectionTitle: string;
+      sectionCopy: string;
+      empty: string;
+      tableResume: string;
+      tableJob: string;
+      tableTotalScore: string;
+      tableMatchScore: string;
+      tableSummary: string;
+      tableCreatedAt: string;
+      tableAction: string;
+      actionDetail: string;
+    };
+  };
 };
 
 const userMessages: Record<"zh-CN" | "en-US", UserMessages> = {
@@ -237,6 +340,109 @@ const userMessages: Record<"zh-CN" | "en-US", UserMessages> = {
       stepReportTitle: "\u751f\u6210\u62a5\u544a",
       stepReportDesc: "\u53d1\u8d77 full_analysis\uff0c\u67e5\u770b strengths\u3001weaknesses \u548c next actions\u3002",
     },
+    resumes: {
+      list: {
+        heroTitle: "\u628a\u53ef\u5206\u6790\u7684\u7b80\u5386\u6574\u7406\u6210\u4e00\u4e2a\u7a33\u5b9a\u5165\u53e3\u3002",
+        heroCopy: "\u4e0a\u4f20\u4e4b\u540e\u4f60\u53ef\u4ee5\u91cd\u65b0\u89e3\u6790\u3001\u8bbe\u4e3a\u9ed8\u8ba4\u7b80\u5386\uff0c\u6216\u8005\u76f4\u63a5\u5e26\u7740\u5b83\u53d1\u8d77\u5c97\u4f4d\u5339\u914d\u5206\u6790\u3002",
+        actionUpload: "\u4e0a\u4f20\u7b80\u5386",
+        actionRefresh: "\u5237\u65b0\u5217\u8868",
+        sectionTitle: "\u7b80\u5386\u5217\u8868",
+        sectionCopy: "\u5f53\u524d\u5171 {total} \u4efd\u7b80\u5386\u3002",
+        searchPlaceholder: "\u6309\u6807\u9898\u641c\u7d22",
+        empty: "\u8fd8\u6ca1\u6709\u7b80\u5386\uff0c\u5148\u4e0a\u4f20\u7b2c\u4e00\u4efd\u5427\u3002",
+        tableTitle: "\u6807\u9898",
+        tableFileName: "\u6587\u4ef6\u540d",
+        tableType: "\u7c7b\u578b",
+        tableSize: "\u5927\u5c0f",
+        tableStatus: "\u72b6\u6001",
+        tableDefault: "\u9ed8\u8ba4",
+        tableCreatedAt: "\u521b\u5efa\u65f6\u95f4",
+        tableAction: "\u64cd\u4f5c",
+        defaultYes: "\u9ed8\u8ba4",
+        actionDetail: "\u8be6\u60c5",
+        actionParse: "AI \u89e3\u6790",
+        actionSetDefault: "\u8bbe\u4e3a\u9ed8\u8ba4",
+        actionAnalyze: "\u53bb\u5206\u6790",
+        actionDelete: "\u5220\u9664",
+        parseSuccess: "\u7b80\u5386\u89e3\u6790\u5b8c\u6210",
+        defaultUpdated: "\u9ed8\u8ba4\u7b80\u5386\u5df2\u66f4\u65b0",
+        deleteConfirmTitle: "\u5220\u9664\u7b80\u5386",
+        deleteConfirmMessage: "\u5220\u9664\u540e\u5c06\u4e0d\u518d\u51fa\u73b0\u5728\u5f53\u524d\u5217\u8868\u4e2d\uff0c\u786e\u8ba4\u7ee7\u7eed\u5417\uff1f",
+        deleteSuccess: "\u7b80\u5386\u5df2\u5220\u9664",
+      },
+    },
+    jobs: {
+      list: {
+        heroTitle: "\u628a\u76ee\u6807\u5c97\u4f4d\u6574\u7406\u6210\u53ef\u5339\u914d\u7684\u7ed3\u6784\u5316\u8f93\u5165\u3002",
+        heroCopy: "\u5c97\u4f4d\u8d8a\u6e05\u6670\uff0c\u540e\u9762\u7684\u5173\u952e\u8bcd\u8986\u76d6\u3001\u7ecf\u9a8c\u5dee\u8ddd\u548c\u5efa\u8bae\u9879\u5c31\u8d8a\u7a33\u5b9a\u3002",
+        actionCreate: "\u521b\u5efa\u5c97\u4f4d",
+        actionRefresh: "\u5237\u65b0\u5217\u8868",
+        sectionTitle: "\u5c97\u4f4d\u5217\u8868",
+        sectionCopy: "\u5f53\u524d\u5171 {total} \u4e2a\u5c97\u4f4d\u3002",
+        searchPlaceholder: "\u6309\u5c97\u4f4d\u6216\u516c\u53f8\u641c\u7d22",
+        empty: "\u8fd8\u6ca1\u6709\u5c97\u4f4d\u63cf\u8ff0\uff0c\u5148\u521b\u5efa\u4e00\u4e2a\u5427\u3002",
+        tableTitle: "\u5c97\u4f4d\u540d\u79f0",
+        tableCompany: "\u516c\u53f8",
+        tableIndustry: "\u884c\u4e1a",
+        tableLocation: "\u5730\u70b9",
+        tableStatus: "\u72b6\u6001",
+        tableCreatedAt: "\u521b\u5efa\u65f6\u95f4",
+        tableAction: "\u64cd\u4f5c",
+        actionDetail: "\u8be6\u60c5",
+        actionParse: "\u91cd\u65b0\u89e3\u6790",
+        actionAnalyze: "\u53bb\u5206\u6790",
+        actionDelete: "\u5220\u9664",
+        parseSuccess: "\u5c97\u4f4d\u89e3\u6790\u5b8c\u6210",
+        deleteConfirmTitle: "\u5220\u9664\u5c97\u4f4d",
+        deleteConfirmMessage: "\u5220\u9664\u540e\u5c06\u4e0d\u518d\u51fa\u73b0\u5728\u5f53\u524d\u5217\u8868\u4e2d\uff0c\u786e\u8ba4\u7ee7\u7eed\u5417\uff1f",
+        deleteSuccess: "\u5c97\u4f4d\u5df2\u5220\u9664",
+      },
+    },
+    analysis: {
+      create: {
+        heroTitle: "\u628a\u7b80\u5386\u548c\u5c97\u4f4d\u653e\u5728\u4e00\u8d77\uff0c\u76f4\u63a5\u751f\u6210\u5b8c\u6574\u5206\u6790\u62a5\u544a\u3002",
+        heroCopy: "\u5f53\u524d MVP \u9ed8\u8ba4\u6267\u884c full_analysis\u3002\u63a5\u53e3\u4f1a\u540c\u6b65\u8fd4\u56de\u7ed3\u679c\uff0c\u6240\u4ee5\u6210\u529f\u540e\u4f1a\u76f4\u63a5\u8df3\u5230\u62a5\u544a\u9875\u3002",
+        sectionTitle: "\u5206\u6790\u914d\u7f6e",
+        sectionCopy: "\u5148\u9009\u62e9\u4e00\u4efd\u7b80\u5386\uff0c\u518d\u9009\u62e9\u4e00\u4e2a\u5c97\u4f4d\u3002",
+        labelResume: "\u9009\u62e9\u7b80\u5386",
+        labelJob: "\u9009\u62e9\u5c97\u4f4d",
+        labelTaskType: "\u5206\u6790\u7c7b\u578b",
+        placeholderResume: "\u8bf7\u9009\u62e9\u7b80\u5386",
+        placeholderJob: "\u8bf7\u9009\u62e9\u5c97\u4f4d",
+        taskTypeValue: "full_analysis",
+        actionSubmit: "\u5f00\u59cb\u5206\u6790",
+        actionViewReports: "\u67e5\u770b\u5df2\u6709\u62a5\u544a",
+        resumeSectionTitle: "\u53ef\u7528\u7b80\u5386",
+        resumeSectionCopy: "\u5efa\u8bae\u4f18\u5148\u9009\u62e9\u5df2\u5b8c\u6210 AI \u89e3\u6790\u7684\u7b80\u5386\u3002",
+        resumeEmpty: "\u8fd8\u6ca1\u6709\u7b80\u5386\uff0c\u5148\u4e0a\u4f20\u4e00\u4efd\u5427\u3002",
+        jobSectionTitle: "\u53ef\u7528\u5c97\u4f4d",
+        jobSectionCopy: "\u5efa\u8bae\u9009\u62e9\u5df2\u7ecf\u68c0\u67e5\u8fc7 JD \u5185\u5bb9\u7684\u5c97\u4f4d\u3002",
+        jobEmpty: "\u8fd8\u6ca1\u6709\u5c97\u4f4d\uff0c\u5148\u521b\u5efa\u4e00\u4e2a\u5427\u3002",
+        companyFallback: "\u672a\u586b\u5199\u516c\u53f8",
+        validationResumeRequired: "\u8bf7\u9009\u62e9\u7b80\u5386",
+        validationJobRequired: "\u8bf7\u9009\u62e9\u5c97\u4f4d",
+        success: "\u5206\u6790\u5b8c\u6210",
+      },
+    },
+    reports: {
+      list: {
+        heroTitle: "\u628a\u6bcf\u4e00\u6b21\u5206\u6790\u7ed3\u679c\u6c89\u6dc0\u6210\u53ef\u56de\u770b\u7684\u62a5\u544a\u3002",
+        heroCopy: "\u8fd9\u91cc\u9002\u5408\u56de\u770b\u4e0d\u540c\u5c97\u4f4d\u4e0b\u7684\u5339\u914d\u5dee\u5f02\uff0c\u89c2\u5bdf\u5173\u952e\u8bcd\u8986\u76d6\u548c\u5efa\u8bae\u9879\u7684\u53d8\u5316\u8d8b\u52bf\u3002",
+        actionCreate: "\u65b0\u5efa\u5206\u6790",
+        actionRefresh: "\u5237\u65b0\u5217\u8868",
+        sectionTitle: "\u62a5\u544a\u5217\u8868",
+        sectionCopy: "\u5f53\u524d\u5171 {total} \u4efd\u62a5\u544a\u3002",
+        empty: "\u8fd8\u6ca1\u6709\u62a5\u544a\uff0c\u5148\u8dd1\u4e00\u6761\u5206\u6790\u94fe\u8def\u5427\u3002",
+        tableResume: "\u7b80\u5386",
+        tableJob: "\u5c97\u4f4d",
+        tableTotalScore: "\u603b\u5206",
+        tableMatchScore: "\u5339\u914d\u5ea6",
+        tableSummary: "\u6458\u8981",
+        tableCreatedAt: "\u751f\u6210\u65f6\u95f4",
+        tableAction: "\u64cd\u4f5c",
+        actionDetail: "\u8be6\u60c5",
+      },
+    },
   },
   "en-US": {
     layout: {
@@ -353,6 +559,109 @@ const userMessages: Record<"zh-CN" | "en-US", UserMessages> = {
       stepJobDesc: "Add the target job description so the model can judge skills and keyword coverage.",
       stepReportTitle: "Generate Report",
       stepReportDesc: "Run full_analysis and review strengths, weaknesses, and next actions.",
+    },
+    resumes: {
+      list: {
+        heroTitle: "Turn analyzable resumes into a stable starting point.",
+        heroCopy: "After uploading, you can re-parse, mark a default resume, or take it straight into job matching analysis.",
+        actionUpload: "Upload Resume",
+        actionRefresh: "Refresh List",
+        sectionTitle: "Resume List",
+        sectionCopy: "{total} resumes in the current workspace.",
+        searchPlaceholder: "Search by title",
+        empty: "No resumes yet. Upload the first one to get started.",
+        tableTitle: "Title",
+        tableFileName: "File Name",
+        tableType: "Type",
+        tableSize: "Size",
+        tableStatus: "Status",
+        tableDefault: "Default",
+        tableCreatedAt: "Created At",
+        tableAction: "Action",
+        defaultYes: "Default",
+        actionDetail: "Detail",
+        actionParse: "AI Parse",
+        actionSetDefault: "Set Default",
+        actionAnalyze: "Analyze",
+        actionDelete: "Delete",
+        parseSuccess: "Resume parsing completed",
+        defaultUpdated: "Default resume updated",
+        deleteConfirmTitle: "Delete Resume",
+        deleteConfirmMessage: "This resume will no longer appear in the current list. Do you want to continue?",
+        deleteSuccess: "Resume deleted",
+      },
+    },
+    jobs: {
+      list: {
+        heroTitle: "Shape target jobs into structured inputs ready for matching.",
+        heroCopy: "The clearer the job description is, the steadier the later keyword coverage, experience gaps, and suggestions will be.",
+        actionCreate: "Create Job",
+        actionRefresh: "Refresh List",
+        sectionTitle: "Job List",
+        sectionCopy: "{total} jobs in the current workspace.",
+        searchPlaceholder: "Search by job or company",
+        empty: "No jobs yet. Create one to get started.",
+        tableTitle: "Job Title",
+        tableCompany: "Company",
+        tableIndustry: "Industry",
+        tableLocation: "Location",
+        tableStatus: "Status",
+        tableCreatedAt: "Created At",
+        tableAction: "Action",
+        actionDetail: "Detail",
+        actionParse: "Re-parse",
+        actionAnalyze: "Analyze",
+        actionDelete: "Delete",
+        parseSuccess: "Job parsing completed",
+        deleteConfirmTitle: "Delete Job",
+        deleteConfirmMessage: "This job will no longer appear in the current list. Do you want to continue?",
+        deleteSuccess: "Job deleted",
+      },
+    },
+    analysis: {
+      create: {
+        heroTitle: "Put a resume and a job together, then generate a full analysis report right away.",
+        heroCopy: "The current MVP runs full_analysis by default. The API returns results synchronously, so success usually takes you straight to the report page.",
+        sectionTitle: "Analysis Setup",
+        sectionCopy: "Choose one resume first, then choose one job.",
+        labelResume: "Choose Resume",
+        labelJob: "Choose Job",
+        labelTaskType: "Task Type",
+        placeholderResume: "Please choose a resume",
+        placeholderJob: "Please choose a job",
+        taskTypeValue: "full_analysis",
+        actionSubmit: "Start Analysis",
+        actionViewReports: "View Existing Reports",
+        resumeSectionTitle: "Available Resumes",
+        resumeSectionCopy: "Prefer resumes that have already completed AI parsing.",
+        resumeEmpty: "No resumes yet. Upload one first.",
+        jobSectionTitle: "Available Jobs",
+        jobSectionCopy: "Prefer jobs whose JD content has already been reviewed.",
+        jobEmpty: "No jobs yet. Create one first.",
+        companyFallback: "Company not set",
+        validationResumeRequired: "Please choose a resume",
+        validationJobRequired: "Please choose a job",
+        success: "Analysis completed",
+      },
+    },
+    reports: {
+      list: {
+        heroTitle: "Save every analysis result as a report you can review later.",
+        heroCopy: "This page is useful for comparing matching gaps across different jobs and watching how keyword coverage and suggestions change over time.",
+        actionCreate: "New Analysis",
+        actionRefresh: "Refresh List",
+        sectionTitle: "Report List",
+        sectionCopy: "{total} reports in the current workspace.",
+        empty: "No reports yet. Run an analysis flow first.",
+        tableResume: "Resume",
+        tableJob: "Job",
+        tableTotalScore: "Score",
+        tableMatchScore: "Match",
+        tableSummary: "Summary",
+        tableCreatedAt: "Created At",
+        tableAction: "Action",
+        actionDetail: "Detail",
+      },
     },
   },
 };

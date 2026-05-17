@@ -4,9 +4,7 @@
       <div class="brand-block">
         <p class="brand-kicker">Resume Studio</p>
         <h1 class="brand-title">AI Resume Analyzer</h1>
-        <p class="brand-copy">
-          把简历、岗位和分析报告放进一条顺滑主链路里。
-        </p>
+        <p class="brand-copy">{{ t.layout.brandCopy }}</p>
       </div>
 
       <nav class="nav-list">
@@ -24,10 +22,21 @@
 
       <div class="sidebar-footer">
         <div class="user-card">
-          <p class="user-name">{{ userStore.currentUser?.nickname || "未命名用户" }}</p>
-          <p class="user-email">{{ userStore.currentUser?.email || "未登录" }}</p>
+          <p class="user-name">{{ userStore.currentUser?.nickname || t.layout.defaultUserName }}</p>
+          <p class="user-email">{{ userStore.currentUser?.email || t.layout.loggedOut }}</p>
         </div>
-        <el-button plain @click="handleLogout">退出登录</el-button>
+
+        <div class="locale-switch">
+          <span class="locale-label">{{ t.layout.languageLabel }}</span>
+          <el-segmented
+            v-model="localeStore.locale"
+            :options="localeOptions"
+            size="small"
+            @change="handleLocaleChange"
+          />
+        </div>
+
+        <el-button plain @click="handleLogout">{{ t.layout.logout }}</el-button>
       </div>
     </aside>
 
@@ -35,11 +44,11 @@
       <header class="topbar">
         <div>
           <p class="topbar-kicker">Local + DeepSeek</p>
-          <h2 class="topbar-title">{{ currentRouteMeta.title }}</h2>
+          <h2 class="topbar-title">{{ currentRouteTitle }}</h2>
         </div>
         <div class="topbar-actions">
-          <el-button @click="router.push('/analysis/create')">新建分析</el-button>
-          <el-button type="primary" @click="router.push('/resumes/upload')">上传简历</el-button>
+          <el-button @click="router.push('/analysis/create')">{{ t.layout.newAnalysis }}</el-button>
+          <el-button type="primary" @click="router.push('/resumes/upload')">{{ t.layout.uploadResume }}</el-button>
         </div>
       </header>
 
@@ -52,65 +61,80 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import { useRouter, useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
 import { logout as requestLogout } from "@/api/auth";
 import { useAuthStore } from "@/stores/auth";
+import { useLocaleStore, type AppLocale } from "@/stores/locale";
 import { useUserStore } from "@/stores/user";
+import { useUserMessages } from "@/utils/userI18n";
 
 const router = useRouter();
 const route = useRoute();
 const authStore = useAuthStore();
+const localeStore = useLocaleStore();
 const userStore = useUserStore();
+const messages = useUserMessages();
 
-const navItems = [
-  { to: "/dashboard", label: "概览", hint: "总览当前进度" },
-  { to: "/resumes", label: "简历", hint: "上传与解析" },
-  { to: "/jobs", label: "岗位", hint: "整理 JD 需求" },
-  { to: "/analysis/create", label: "分析", hint: "发起匹配分析" },
-  { to: "/reports", label: "报告", hint: "查看结果沉淀" },
-  { to: "/profile", label: "我的", hint: "维护个人信息" },
-];
+const t = computed(() => messages.value);
 
-const currentRouteMeta = computed(() => {
+const navItems = computed(() => [
+  { to: "/dashboard", label: t.value.layout.navDashboard, hint: t.value.layout.navDashboardHint },
+  { to: "/resumes", label: t.value.layout.navResumes, hint: t.value.layout.navResumesHint },
+  { to: "/jobs", label: t.value.layout.navJobs, hint: t.value.layout.navJobsHint },
+  { to: "/analysis/create", label: t.value.layout.navAnalysis, hint: t.value.layout.navAnalysisHint },
+  { to: "/reports", label: t.value.layout.navReports, hint: t.value.layout.navReportsHint },
+  { to: "/profile", label: t.value.layout.navProfile, hint: t.value.layout.navProfileHint },
+]);
+
+const localeOptions = computed(() => [
+  { label: t.value.layout.languageChinese, value: "zh-CN" },
+  { label: t.value.layout.languageEnglish, value: "en-US" },
+]);
+
+const currentRouteTitle = computed(() => {
   if (route.path === "/dashboard") {
-    return { title: "工作台" };
+    return t.value.layout.titleDashboard;
   }
   if (route.path === "/resumes") {
-    return { title: "简历中心" };
+    return t.value.layout.titleResumes;
   }
   if (route.path === "/resumes/upload") {
-    return { title: "上传简历" };
+    return t.value.layout.titleResumeUpload;
   }
   if (route.path.startsWith("/resumes/")) {
-    return { title: "简历详情" };
+    return t.value.layout.titleResumeDetail;
   }
   if (route.path === "/jobs") {
-    return { title: "岗位中心" };
+    return t.value.layout.titleJobs;
   }
   if (route.path === "/jobs/create") {
-    return { title: "创建岗位" };
+    return t.value.layout.titleJobCreate;
   }
   if (route.path.startsWith("/jobs/")) {
-    return { title: "岗位详情" };
+    return t.value.layout.titleJobDetail;
   }
   if (route.path === "/analysis/create") {
-    return { title: "发起分析" };
+    return t.value.layout.titleAnalysisCreate;
   }
   if (route.path.startsWith("/analysis/tasks/")) {
-    return { title: "任务状态" };
+    return t.value.layout.titleAnalysisTask;
   }
   if (route.path === "/reports") {
-    return { title: "分析报告" };
+    return t.value.layout.titleReports;
   }
   if (route.path.startsWith("/reports/")) {
-    return { title: "报告详情" };
+    return t.value.layout.titleReportDetail;
   }
   if (route.path === "/profile") {
-    return { title: "个人设置" };
+    return t.value.layout.titleProfile;
   }
-  return { title: "详情页" };
+  return t.value.layout.titleFallback;
 });
+
+function handleLocaleChange(value: string | number | boolean) {
+  localeStore.setLocale(value as AppLocale);
+}
 
 async function handleLogout() {
   try {
@@ -231,6 +255,16 @@ async function handleLogout() {
 .user-email {
   margin-top: 6px;
   font-size: 13px;
+  color: rgba(245, 247, 242, 0.72);
+}
+
+.locale-switch {
+  display: grid;
+  gap: 8px;
+}
+
+.locale-label {
+  font-size: 12px;
   color: rgba(245, 247, 242, 0.72);
 }
 

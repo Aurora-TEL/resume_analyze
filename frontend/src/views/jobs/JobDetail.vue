@@ -4,15 +4,15 @@
       <p class="hero-kicker">Job Detail</p>
       <h1 class="hero-title">{{ detail.title }}</h1>
       <p class="hero-copy">
-        当前解析状态为
+        {{ t.statusPrefix }}
         <el-tag :type="statusTagType(detail.parse_status)">{{ statusLabel(detail.parse_status) }}</el-tag>
-        ，你可以继续补充文本、重跑解析或直接开始匹配分析。
+        {{ t.statusSuffix }}
       </p>
       <div class="action-row">
-        <el-button type="primary" @click="handleSave">保存修改</el-button>
-        <el-button @click="handleParse">重新解析</el-button>
-        <el-button @click="router.push(`/analysis/create?jobId=${detail.id}`)">去分析</el-button>
-        <el-button type="danger" plain @click="handleDelete">删除岗位</el-button>
+        <el-button type="primary" @click="handleSave">{{ t.actionSave }}</el-button>
+        <el-button @click="handleParse">{{ t.actionParse }}</el-button>
+        <el-button @click="router.push(`/analysis/create?jobId=${detail.id}`)">{{ t.actionAnalyze }}</el-button>
+        <el-button type="danger" plain @click="handleDelete">{{ t.actionDelete }}</el-button>
       </div>
     </section>
 
@@ -20,31 +20,31 @@
       <section class="section-card">
         <div class="section-head">
           <div>
-            <h2 class="section-title">岗位内容</h2>
-            <p class="section-copy">可以直接在这里维护 JD 原文与基础信息。</p>
+            <h2 class="section-title">{{ t.contentTitle }}</h2>
+            <p class="section-copy">{{ t.contentCopy }}</p>
           </div>
         </div>
 
         <el-form ref="formRef" :model="form" :rules="rules" label-position="top">
           <div class="form-grid">
-            <el-form-item label="岗位名称" prop="title">
+            <el-form-item :label="t.labelTitle" prop="title">
               <el-input v-model="form.title" maxlength="200" />
             </el-form-item>
-            <el-form-item label="公司名称">
+            <el-form-item :label="t.labelCompany">
               <el-input v-model="form.company_name" maxlength="200" />
             </el-form-item>
-            <el-form-item label="行业">
+            <el-form-item :label="t.labelIndustry">
               <el-input v-model="form.industry" maxlength="100" />
             </el-form-item>
-            <el-form-item label="工作地点">
+            <el-form-item :label="t.labelLocation">
               <el-input v-model="form.location" maxlength="100" />
             </el-form-item>
-            <el-form-item label="薪资范围">
+            <el-form-item :label="t.labelSalary">
               <el-input v-model="form.salary_range" maxlength="100" />
             </el-form-item>
           </div>
 
-          <el-form-item label="岗位描述" prop="description_text">
+          <el-form-item :label="t.labelDescription" prop="description_text">
             <el-input v-model="form.description_text" type="textarea" :rows="14" />
           </el-form-item>
         </el-form>
@@ -55,33 +55,26 @@
       <section class="section-card">
         <div class="section-head">
           <div>
-            <h2 class="section-title">解析结果</h2>
-            <p class="section-copy">这里展示 AI 抽取出的技能、关键词和优先级。</p>
+            <h2 class="section-title">{{ t.resultTitle }}</h2>
+            <p class="section-copy">{{ t.resultCopy }}</p>
           </div>
         </div>
 
         <div class="summary-block">
-          <h3>关键词</h3>
+          <h3>{{ t.keywordsTitle }}</h3>
           <div class="pill-list">
-            <el-tag
-              v-for="keyword in keywordTags"
-              :key="keyword"
-              type="success"
-              effect="plain"
-            >
-              {{ keyword }}
-            </el-tag>
-            <span v-if="!keywordTags.length">暂无关键词</span>
+            <el-tag v-for="keyword in keywordTags" :key="keyword" type="success" effect="plain">{{ keyword }}</el-tag>
+            <span v-if="!keywordTags.length">{{ t.emptyKeywords }}</span>
           </div>
         </div>
 
         <div class="summary-block">
-          <h3>核心职责条目</h3>
-          <p>{{ responsibilityCount }} 条</p>
+          <h3>{{ t.responsibilityTitle }}</h3>
+          <p>{{ responsibilityCount }} {{ t.itemUnit }}</p>
         </div>
 
         <div class="summary-block">
-          <h3>结构化 JSON</h3>
+          <h3>{{ t.structuredJsonTitle }}</h3>
           <div class="json-panel">
             <pre>{{ structuredJson }}</pre>
           </div>
@@ -97,10 +90,75 @@ import { useRoute, useRouter } from "vue-router";
 import { ElMessage, ElMessageBox, type FormInstance, type FormRules } from "element-plus";
 
 import { deleteJob, getJobDetail, parseJob, updateJob, type JobDetail } from "@/api/jobs";
+import { useLocaleStore } from "@/stores/locale";
 import { asArray, statusLabel, statusTagType } from "@/utils/format";
+
+const zh = {
+  statusPrefix: "\u5f53\u524d\u89e3\u6790\u72b6\u6001\u4e3a",
+  statusSuffix: "\uff0c\u4f60\u53ef\u4ee5\u7ee7\u7eed\u8865\u5145\u6587\u672c\u3001\u91cd\u8dd1\u89e3\u6790\u6216\u76f4\u63a5\u5f00\u59cb\u5339\u914d\u5206\u6790\u3002",
+  actionSave: "\u4fdd\u5b58\u4fee\u6539",
+  actionParse: "\u91cd\u65b0\u89e3\u6790",
+  actionAnalyze: "\u53bb\u5206\u6790",
+  actionDelete: "\u5220\u9664\u5c97\u4f4d",
+  contentTitle: "\u5c97\u4f4d\u5185\u5bb9",
+  contentCopy: "\u53ef\u4ee5\u76f4\u63a5\u5728\u8fd9\u91cc\u7ef4\u62a4 JD \u539f\u6587\u4e0e\u57fa\u7840\u4fe1\u606f\u3002",
+  labelTitle: "\u5c97\u4f4d\u540d\u79f0",
+  labelCompany: "\u516c\u53f8\u540d\u79f0",
+  labelIndustry: "\u884c\u4e1a",
+  labelLocation: "\u5de5\u4f5c\u5730\u70b9",
+  labelSalary: "\u85aa\u8d44\u8303\u56f4",
+  labelDescription: "\u5c97\u4f4d\u63cf\u8ff0",
+  resultTitle: "\u89e3\u6790\u7ed3\u679c",
+  resultCopy: "\u8fd9\u91cc\u5c55\u793a AI \u62bd\u53d6\u51fa\u7684\u6280\u80fd\u3001\u5173\u952e\u8bcd\u548c\u4f18\u5148\u7ea7\u3002",
+  keywordsTitle: "\u5173\u952e\u8bcd",
+  emptyKeywords: "\u6682\u65e0\u5173\u952e\u8bcd",
+  responsibilityTitle: "\u6838\u5fc3\u804c\u8d23\u6761\u76ee",
+  structuredJsonTitle: "\u7ed3\u6784\u5316 JSON",
+  itemUnit: "\u6761",
+  validationTitle: "\u8bf7\u8f93\u5165\u5c97\u4f4d\u540d\u79f0",
+  validationDescription: "\u8bf7\u8f93\u5165\u5c97\u4f4d\u63cf\u8ff0",
+  saveSuccess: "\u5c97\u4f4d\u5df2\u66f4\u65b0",
+  parseSuccess: "\u5c97\u4f4d\u89e3\u6790\u5b8c\u6210",
+  deleteConfirmTitle: "\u5220\u9664\u5c97\u4f4d",
+  deleteConfirmMessage: "\u5220\u9664\u540e\u5c06\u4ece\u5f53\u524d\u5de5\u4f5c\u6d41\u4e2d\u79fb\u9664\u8be5\u5c97\u4f4d\uff0c\u786e\u8ba4\u7ee7\u7eed\u5417\uff1f",
+  deleteSuccess: "\u5c97\u4f4d\u5df2\u5220\u9664",
+};
+
+const en = {
+  statusPrefix: "Current parsing status is",
+  statusSuffix: ", and you can continue editing the text, rerun parsing, or start matching analysis directly.",
+  actionSave: "Save Changes",
+  actionParse: "Re-parse",
+  actionAnalyze: "Analyze",
+  actionDelete: "Delete Job",
+  contentTitle: "Job Content",
+  contentCopy: "You can maintain the raw JD text and basic metadata directly here.",
+  labelTitle: "Job Title",
+  labelCompany: "Company Name",
+  labelIndustry: "Industry",
+  labelLocation: "Work Location",
+  labelSalary: "Salary Range",
+  labelDescription: "Job Description",
+  resultTitle: "Parsed Result",
+  resultCopy: "This section shows the skills, keywords, and priorities extracted by AI.",
+  keywordsTitle: "Keywords",
+  emptyKeywords: "No keywords yet",
+  responsibilityTitle: "Core Responsibility Items",
+  structuredJsonTitle: "Structured JSON",
+  itemUnit: "items",
+  validationTitle: "Please enter the job title",
+  validationDescription: "Please enter the job description",
+  saveSuccess: "Job updated",
+  parseSuccess: "Job parsing completed",
+  deleteConfirmTitle: "Delete Job",
+  deleteConfirmMessage: "This job will be removed from the current workflow. Do you want to continue?",
+  deleteSuccess: "Job deleted",
+};
 
 const route = useRoute();
 const router = useRouter();
+const localeStore = useLocaleStore();
+const t = computed(() => (localeStore.locale === "zh-CN" ? zh : en));
 const formRef = ref<FormInstance>();
 const loading = ref(false);
 const detail = ref<JobDetail | null>(null);
@@ -113,10 +171,10 @@ const form = reactive({
   description_text: "",
 });
 
-const rules: FormRules = {
-  title: [{ required: true, message: "请输入岗位名称", trigger: "blur" }],
-  description_text: [{ required: true, message: "请输入岗位描述", trigger: "blur" }],
-};
+const rules = computed<FormRules>(() => ({
+  title: [{ required: true, message: t.value.validationTitle, trigger: "blur" }],
+  description_text: [{ required: true, message: t.value.validationDescription, trigger: "blur" }],
+}));
 
 const structuredJson = computed(() => JSON.stringify(detail.value?.structured_data || {}, null, 2));
 const keywordTags = computed(() =>
@@ -150,22 +208,22 @@ async function handleSave() {
   }
 
   await updateJob(String(route.params.id), form);
-  ElMessage.success("岗位已更新");
+  ElMessage.success(t.value.saveSuccess);
   await loadDetail();
 }
 
 async function handleParse() {
   await parseJob(String(route.params.id));
-  ElMessage.success("岗位解析完成");
+  ElMessage.success(t.value.parseSuccess);
   await loadDetail();
 }
 
 async function handleDelete() {
-  await ElMessageBox.confirm("删除后将从当前工作流中移除该岗位，确认继续吗？", "删除岗位", {
+  await ElMessageBox.confirm(t.value.deleteConfirmMessage, t.value.deleteConfirmTitle, {
     type: "warning",
   });
   await deleteJob(String(route.params.id));
-  ElMessage.success("岗位已删除");
+  ElMessage.success(t.value.deleteSuccess);
   router.push("/jobs");
 }
 
