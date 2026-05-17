@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+
+# Node
+node_modules/
+frontend/node_modules/
+frontend/dist/
+
+# Environment
+.env
+.env.dev
+.env.prod
+!.env.example
+frontend/.env.local
+
+# IDE / OS
+.idea/
+.vscode/
+Thumbs.db
+.DS_Store
+
+# Logs
+*.log
+logs/backend/*
+logs/nginx/*
+!logs/backend/.gitkeep
+!logs/nginx/.gitkeep
+
+# Runtime data
+storage/resumes/*
+!storage/resumes/.gitkeep
+data/postgres/*
+!data/postgres/.gitkeep
+backups/*
+!backups/.gitkeep
+
+# Coverage
+.coverage
+coverage/
+htmlcov/
